@@ -33,6 +33,10 @@
 - 新增 `examples/` 6 个跨域示例（含 1 个 INSUFFICIENT 拒答）。
 - 新增 `CONTRIBUTING.md`（算子准入 5 条）、双许可 `LICENSE`。
 
+### 文档
+- README 重写：补 11 个原始模型 → 操作符的映射表、六条公理、安装与使用说明、拒答示例。
+- 新增 `.gitattributes`：关闭 Markdown/YAML 语言统计，避免仓库被误标为 Python 项目。
+
 ## v0.1.0
 
 - 首次把 YD 思维模型封装为推理技能。

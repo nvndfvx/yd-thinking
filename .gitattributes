@@ -1,0 +1,7 @@
+# 本仓库是「Markdown 技能包」，唯一代码是 evals/run.py 这个校验脚本。
+# 若不关闭语言统计，GitHub 会把本仓库标成「Python 100%」，
+# 让人误以为这是一个 Python 项目。这里显式声明：文档不计入，脚本也不计入。
+*.md    linguist-documentation
+*.yaml  linguist-documentation
+*.yml   linguist-documentation
+evals/run.py linguist-detectable=false

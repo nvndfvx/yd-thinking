@@ -1,29 +1,73 @@
 # YD Thinking
 
+> **追是方向，压是力度，判要能推翻。**
+
 一套用于**复杂问题分析、决策、风险排查与复盘**的推理技能（agent skill）。
 
-不是"思维模型笔记合集"，而是一个**会拒绝的分析器**：它给最稳解 + 验证标准 + 证伪条件，信息不足时宁可拒答，不硬编。
+不是"思维模型笔记合集"，而是一个**会拒绝的分析器**：它给最稳解 + 验证标准 + 证伪条件；信息不足时宁可拒答，也不硬编一个听起来完整的判断。
 
-## 一句话
+---
 
-> 追是方向，压是力度，判要能推翻。
+## 这是什么
 
-## 什么时候用（触发词）
+| 常见疑问 | 答案 |
+|---|---|
+| 它是提示词模板吗？ | 不是。它有路由、流程、输出契约、门禁和可执行评测 |
+| 它是知识库吗？ | 不是。它不解释"什么是复利"，它帮你判断"这个月要不要把钱投进去" |
+| 它是笔记合集吗？ | 不是。11 个手写模型被重组成 **6 个动作 + 6 条流程 + 2 面镜子**，每个都有输入输出契约 |
+| 它会给答案吗？ | 会给，但附带"什么情况下我就错了"和"怎么验证有没有效" |
+| 信息不够时会怎样？ | **拒答**，只问 ≤2 个关键问题，然后停下 |
 
-- 「我要不要 / 该不该选 X」「值不值得投入 / 学」
-- 「这件事为什么做不起来」「我该怎么突破」
-- 「帮我追根因」「这个方案有什么风险」
-- 「帮我复盘这次失败」「为什么我总是三分钟热度」
-- 「这个剧本 / 内容第二幕塌了」
+---
 
-**不用于**：知识问答、情绪陪聊、写文档。
+## YD 思维模型是什么
 
-## 30 秒看它做了什么
+它源自 11 个手写思维模型，这套技能把它们重组成了可调用、可评测的结构：
 
-输入："我的视频号做了 8 个月还是起不来。"
+| 原始模型 | 现在的位置 | 一句话 |
+|---|---|---|
+| 九步深度思维法 | `operators/flows/vertical.md` | 单线到底：定性 → 功能 → 机制 → 结构 → 排序 → 锚定自己 → 路径 → 组合 → 验证 |
+| 九步阴阳交汇 | `operators/flows/spiral.md` | 维度并存不是二选一；找交汇处的质变点；螺旋往上"脱一层" |
+| 多元思维模型 | `operators/verbs/collide.md` + 公理 A | 多学科交叉判断，抵消单一视角的偏见 |
+| 多维称重法 | `operators/verbs/weigh.md` | 排权重、分清想法与感受、先排除明显错的 |
+| 碰撞溯源法 | `operators/verbs/collide.md` | 外化 → 碰撞 → 确认 → 追问 → 验证 → 整合 → 记录 → 行动 |
+| 九步风控决策法 | `operators/flows/defensive.md` | 防守型：多路推演、算最坏情况占比、选最稳不选最优 |
+| 两头中间法 | `operators/flows/structure.md` | 结果倒推路径：先定弧线两头，再往里填事件 |
+| 综合思维模型 | `templates/output.md` | 一次完整分析的固定骨架 |
+| 杠杆思维 | `operators/flows/diagnose.md` | 支点（可测、不动）→ 杠杆（积累）→ 缝隙（从无到有） |
+| 根源系统（追·压） | `operators/verbs/trace.md` | **追根溯源，持续施压，系统自现。不是够用，是想通。** |
+| 废掉自己的清单 | `operators/lenses/failure-list.md` | 7 步废掉链，只找**最靠前**的失效点 |
 
-别的工具会回"多拍、蹭热点、优化封面"。
-本技能会回：
+### 六条公理（这套模型的内核）
+
+- **A 多元** — 规律跨领域共同作用，单一直觉必然片面
+- **B 阴阳** — 阴与阳交缠转化、螺旋往上；不是选一边，阴中有阳，阳中有阴
+- **C 结构** — 先看由什么构成、各部分什么关系、根在哪，再看现象
+- **D 杠杆** — 支点越稳，杠杆越长；缝隙是结构与结构之间的接口
+- **E 追压** — 追是方向，压是力度；**压了才知道，不压永远不知道**
+- **F 反向** — 贪轻松 → 凭感觉 → 短视换向 → 内耗 → 怕试错 → 跟风 → 平庸
+
+> 内核还带三条"刹车"，缺了它们上面六条会退化成万能话术：
+> **支点必须可测** · **压必须带期限/信号/到点复盘** · **极点必须事前定义**。
+
+---
+
+## 它和"思维模型笔记"的区别
+
+1. **会追根** —— 不接受"执行力不够"，要求至少两个候选根被明确否掉
+2. **会算代价** —— 最坏情况必须给数字和占比，`占比 > 天花板` 的选项直接出局
+3. **会拒绝** —— 信息不足时停下问问题，不给悬空的完整判断
+4. **可被推翻** —— 每条结论都带 `kill_criteria` 和"我会在什么情况下改主意"
+
+---
+
+## 30 秒看它做什么
+
+输入：
+
+> 我的视频号做了 8 个月还是起不来。
+
+它不会回你"多拍、蹭热点、优化封面"。它会回：
 
 ```
 结论：不是拍得少，是没有一个『看完想找你』的落点。补落点，别加频率。
@@ -31,52 +75,124 @@
 改主意的条件：连续 10 条都写给具体的人，完播率仍低于 25%。
 ```
 
-区别不在结论，在**结论被追过根、排过权重、还附了一个能推翻它的条件**。
+区别不在结论，在于**结论被追过根、排过权重、还附了一个能推翻它的条件**。
+
+---
 
 ## 安装
 
-把本目录放进你的 agent skills 目录（以 Claude Code 为例）：
+### Claude Code
 
 ```bash
-git clone <repo-url> ~/.claude/skills/yd-thinking
+git clone https://github.com/nvndfvx/yd-thinking.git ~/.claude/skills/yd-thinking
 ```
 
-DSH 用户放进 `D:\dsh-home\skills\yd-thinking\`，并在技能索引里登记。
+### DSH（DeepSeek Harness）
+
+把本目录放到：
+
+```
+D:\dsh-home\skills\yd-thinking\
+```
+
+并在技能索引里登记。
+
+### 其他 agent / 手动
+
+把整个目录复制进你的 skills 目录即可。核心入口是 `SKILL.md`，其余文件按需加载（`SKILL.md` 里写了加载顺序和预算，不要一次全读）。
+
+---
+
+## 怎么用
+
+### 1. 直接说人话
+
+| 你会说 | 它走 |
+|---|---|
+| 我要不要 / 该不该 X、值不值得投入 | 决策流程（可逆走轻、不可逆走风控） |
+| 这件事为什么做不起来 / 我怎么突破 | 追根 + 找缝隙 |
+| 帮我追根因 / 这个方案有什么风险 | 追根 / 风控 |
+| 帮我复盘这次失败 / 为什么我总是三分钟热度 | 复盘 |
+| 这个剧本第二幕塌了 | 结构流程（两头中间） |
+
+### 2. 它会先判四件事
+
+`settled`（已经发生了吗）· `choose`（在互斥选项里选吗）· `multi`（涉及多方吗）· `oneway`（错了能退回来吗）
+
+判不出来、而且缺了会改变结论 → 它只问你 **≤2 个问题**，然后停。
+
+### 3. 输出分两段
+
+- **answer** —— 给人读，≤200 字，第一句就是结论
+- **payload** —— 给机器读，字段固定（见 `compiler/schema.yaml`）
+
+人读前一段就能做决定；agent 读后一段就能续接。
+
+### 4. 它会拒绝你
+
+```
+我需要先知道两件事：
+1. 对方给的薪资，以及你现在这份的薪资（具体数字，不是"还不错"）
+2. 这个 offer 有多长有效期，拒了之后还回得来吗
+
+（拿到这两个答案我再判。现在给结论会是编的。）
+```
+
+**拒答不是失败，是这个技能最值钱的部分。**
+
+---
 
 ## 目录结构
 
 ```
-SKILL.md                 入口：公理 + 四轴路由 + 加载顺序 + 七道门禁
-kernel/principles.md     六条公理长版（含可证伪要求）
-router/axes.yaml         四轴路由表（机器可读）
-router/fallback.md       轴判不出来时的降级与拒答
-orchestrator/state-machine.md
-compiler/schema.yaml     输出契约（唯一真相）
-templates/output.md      输出模板（由 schema 派生）
+SKILL.md                  入口：公理 + 四轴路由 + 加载顺序 + 七道门禁
+kernel/principles.md      六条公理长版（含可证伪要求）
+router/axes.yaml          四轴路由表（机器可读）
+router/fallback.md        轴判不出来时的降级与拒答
+orchestrator/state-machine.md   状态与退回规则
+compiler/schema.yaml      输出契约（唯一真相）
+templates/output.md       输出模板（由 schema 派生）
 guardrails/checklist.yaml 七道门禁的可检验定义
 operators/
-  verbs/                 frame / decompose / weigh / trace / collide / choose
-  flows/                 vertical / spiral / diagnose / retro / structure / defensive
-  lenses/                failure-list / premortem
-  loop/                  feedback
-examples/                6 个跨域完整示例（含 1 个"拒答"）
-evals/                   cases.jsonl + run.py + CI（无需 LLM 的结构自检）
+  verbs/                  frame / decompose / weigh / trace / collide / choose
+  flows/                  vertical / spiral / diagnose / retro / structure / defensive
+  lenses/                 failure-list / premortem
+  loop/                   feedback
+examples/                 6 个跨域完整示例（含 1 个"拒答"）
+evals/                    cases.jsonl + run.py + CI（无需 LLM 的结构自检）
 ```
+
+---
 
 ## 设计原则
 
 > **Kernel 内联不可变，Operators 按需加载，Router 用 4 个可判的轴，Compiler 固定，Guardrails 交证据不交布尔，Evals 可回归。**
 
-## 测试
+---
+
+## 验证
 
 ```bash
 pip install pyyaml
 python evals/run.py
 ```
 
-CI 在每次 push 跑同一套检查。
+CI 在每次 push 跑同一套检查（`.github/workflows/eval.yml`）。
+
+---
+
+## 版本
+
+当前 **v0.2.0** —— 变更记录见 [CHANGELOG.md](CHANGELOG.md)。
+固定版本下载：`https://github.com/nvndfvx/yd-thinking/releases/tag/v0.2.0`
+
+---
 
 ## 许可
 
-代码（`evals/run.py`）：MIT
-文档（其余全部）：CC BY 4.0
+- 代码（`evals/run.py`）：MIT
+- 文档（其余全部）：CC BY 4.0
+
+---
+
+> 示例中的情境为虚构，仅用于演示分析过程。
