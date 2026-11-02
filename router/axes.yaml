@@ -1,0 +1,103 @@
+# Router: 四轴表
+
+> v0.1 的问题：`precedence: rules_first_then_llm` 无法执行——`when` 全是自然语言（"问题是单一目标"），
+> 模型没法机械判定，于是永远走 fallback，规则表形同虚设。
+>
+> v0.2 改成 **分类优先、规则守卫**（`classify_then_guard`）：
+> 先回答 4 个 yes/no（这是可判的），再由表格唯一确定流程，最后由 guards 拦截非法组合。
+> 语义解析代码见 `evals/run.py::derive()`——**表和代码必须一致，CI 会验。**
+
+```yaml
+version: 0.2.0
+
+resolution: classify_then_guard
+
+axes:
+  settled:
+    ask: 这件事已经发生了吗？
+    true_means: 复盘（找根因、防重犯）
+  choose:
+    ask: 是不是在互斥选项里选一个？
+    true_means: 决策（选一个，放弃其他）
+    false_means: 突破（做不起来/找不到发力点/想搞懂一个东西）
+  multi:
+    ask: 涉及多方利益或多个互相拉扯的约束吗？
+    true_means: 需要称重 + 转化，不能单线推
+  oneway:
+    ask: 错了能退回来吗？
+    false_means: 不可逆，按风控走，不许快
+  # 非轴，仅用于路由的附加判定
+  structure:
+    ask: 问题是内容/剧本/故事的结构问题吗？
+  blind_spot:
+    ask: 是不是想不清、需要外部碰撞？
+  prevent_repeat:
+    ask: 目标是"以后别再犯"吗？
+
+primary:
+  # 命中即停，自上而下第一条生效
+  - if: structure
+    flow: structure
+  - if: settled
+    flow: retro
+  - if: "not choose"
+    flow: diagnose
+  - if: multi
+    flow: spiral
+  - else: vertical
+
+modifiers:
+  - id: defensive
+    when: oneway
+    required: true
+    why: 不可逆决策必须两路推演、选最稳解
+  - id: premortem
+    when: oneway
+    required: true
+    why: 不可逆决策必须假设已失败，写尸检
+  - id: collide
+    when: "blind_spot or multi"
+    required: false
+  - id: failure_list
+    when: "settled or prevent_repeat"
+    required: false
+
+mode:
+  rule: "deep if (oneway or multi) else lean"
+  floors:
+    retro: deep        # 复盘一律读满：根因在地下，不能省
+    structure: lean
+
+guards:
+  - id: G1
+    check: "oneway=true 必须同时带 defensive 和 premortem"
+  - id: G2
+    check: "mode 不得低于 mode.floors 里该 flow 的下限"
+  - id: G3
+    check: "用户要求'快点'不得把 oneway=true 降成 lean"
+  - id: G4
+    check: "任一轴缺失且会改变 primary 结果 → 不许猜，走 INSUFFICIENT"
+  - id: G5
+    check: "structure=true 且 settled=false 时，不用 spiral/vertical，用 structure"
+
+insufficient:
+  rule: 缺的轴会改变 primary 结果时，只问 ≤2 个问题，然后停
+  # 例：不知道 settled，就无法区分 retro 和 vertical → 必须问
+```
+
+## 为什么这 4 个轴够用
+
+`settled / choose / multi / oneway` 覆盖了原 8 条规则的全部判定意图：
+
+| 原规则 | 被哪几个轴吸收 |
+|---|---|
+| R1 单一深挖 | choose=yes, multi=no → vertical |
+| R2 多维复杂 | multi=yes → spiral |
+| R3 选择纠结 | choose=yes + collide |
+| R4 高风险 | oneway=yes → defensive + premortem |
+| R5 卡住/增长停滞 | choose=no → diagnose |
+| R6 复盘失败 | settled=yes → retro |
+| R7 剧本结构 | structure=yes |
+| R8 完整分析 | multi=yes + oneway=yes 自然叠满 |
+
+8 条软规则 → 4 个硬判定。**少了一半的规则，判定反而变准了。**

@@ -1,0 +1,125 @@
+# Guardrails：七道门禁
+
+> v0.1 把门禁做成了 7 个布尔。**自己给自己打分不叫门禁。**
+> v0.2 每道门必须交一件**证据**，并且定义了"什么算证据"和"不过退到哪"。
+> `evals/run.py` 会机械检查其中能机械检查的部分（标了 `machine: yes`）。
+
+```yaml
+version: 0.2.0
+policy:
+  all_must_pass: true
+  never_skippable: [root_chain, first_step]     # 即使 lean 也不许省
+  lean_can_skip_expansion: [weighted, worst_case, signals]   # 字段仍要填
+  on_fail: 退回对应状态，不交付。不是打个折交付。
+
+gates:
+
+  - id: root_chain
+    ask: 追到根了，还是停在表面？
+    evidence: root_chain 里至少 2 个候选根，其中至少 1 个被明确否掉并写了理由
+    machine: yes
+    predicate: "len(root_chain) >= 2 and any(r.status == 'rejected' for r in root_chain) and all(len(r.why) >= 15)"
+    fail_to: ANALYZE/trace
+    smell: |
+      出现这些就说明没追到根：
+      - 根 = "执行力不够" / "不够努力" / "认知不够"（这是现象，不是根）
+      - 只有一条 root_chain
+      - open_frontier 是空的（说明你认为全想通了）
+
+  - id: multi_view
+    ask: 有几个视角，它们互相打架吗？
+    evidence: weights 里 ≥2 个维度，且它们的结论/分数**不一致**（全一致 = 只有一个视角）
+    machine: yes
+    predicate: "len(weights) >= 2 and len({w.weight for w in weights}) >= 2"
+    fail_to: ANALYZE/collide
+    smell: 所有维度权重都等于 3 或 4
+
+  - id: weighted
+    ask: 排权重了，还是平均用力？
+    evidence: max(weight) >= 2 * min(weight)，且恰好 1 条 only_one=true
+    machine: yes
+    predicate: "max(w) >= 2*min(w) and sum(w.only_one) == 1"
+    fail_to: ANALYZE/weigh
+    smell: |
+      - 权重全 4，或全 5
+      - only_one 有 0 条（不敢取舍）或多条（其实没排）
+      - evidence 写"比较重要"这种形容词
+
+  - id: worst_case
+    ask: 最坏情况是什么，占你多少？
+    evidence: loss.amount 是数字或具体物，loss.share_of_resources 是比例，loss.ceiling 是先写好的天花板
+    machine: partial        # 检查字段存在与形如百分比；合理性靠人
+    predicate: "risks.loss.amount and '%' in risks.loss.share_of_resources and risks.loss.ceiling"
+    when: "oneway == true and settled == false"
+    fail_to: ANALYZE/choose
+    smell: |
+      - "最坏就是损失一些钱"（没有数）
+      - share ≥ ceiling 却仍然判定"能承受"（→ 必须改判或改方案）
+      - 只有 worst_case 没有 mitigation
+
+  - id: first_step
+    ask: 第一步今天能做吗？
+    evidence: plan.first_step 四要素齐 —— verb + object + when(今天/明天/具体时刻) + done_marker
+    machine: yes
+    predicate: "all(k in first_step for k in ['verb','object','when','done_marker']) and first_step.when not in ['尽快','以后','有空时']"
+    fail_to: DECIDE（说明方案还没收敛到能动手）
+    smell: |
+      - "制定一个计划"（这不是步骤，是元步骤）
+      - "先去了解一下"（无完成标志）
+      - when = "下周"（lean/deep 都要求 48 小时内）
+
+  - id: signals
+    ask: 怎么知道系统在转，而不是结果好看？
+    evidence: signals.system_turning ≥1（领先）+ signals.outcome ≥1（滞后），且两者不同
+    machine: yes
+    predicate: "len(system_turning) >= 1 and len(outcome) >= 1 and set(system_turning) != set(outcome)"
+    fail_to: PLAN
+    smell: |
+      - 只有"三个月后看收入"（纯滞后 → 前两个月无信息，会过早放弃或死扛）
+      - 领先信号是"我感觉状态在变好"（不可观测）
+
+  - id: falsifier
+    ask: 什么情况下我改主意？
+    evidence: decision.kill_criteria ≥1 条，且 answer.what_would_change_my_mind 非空
+    machine: yes
+    predicate: "len(kill_criteria) >= 1 and len(answer.what_would_change_my_mind) >= 15"
+    fail_to: DECIDE
+    smell: |
+      - "如果发现不合适就调整"（不可观测）
+      - kill_criteria 写的是"情况变化"
+      这条是本技能和"自信地胡说"之间唯一的分界线。
+
+# 交付前最后一遍：扫禁用词
+banned_words:
+  self_check:
+    - 是
+    - 否
+    - 通过
+    - 已通过
+    - 全过
+    - "true"
+    - "false"
+    - N/A
+    - 无
+  any_field:
+    - 综上所述
+    - 因人而异
+    - 具体情况具体分析
+    - 建议根据实际情况
+    - 保持关注
+    - 一定程度上
+```
+
+## 一张图看清门禁在干嘛
+
+| 门 | 防的是哪种病 |
+|---|---|
+| `root_chain` | 停在表面还自称想通了 |
+| `multi_view` | 只有一个视角但装作权衡过 |
+| `weighted` | 平均用力 = 不敢取舍 |
+| `worst_case` | 只看收益不看代价 |
+| `first_step` | 给了方向但没法动手 |
+| `signals` | 用滞后指标骗自己"在变好" |
+| `falsifier` | 永远正确的判断 |
+
+后三个是本套技能真正的差异点：**能执行、能验、能推翻。**

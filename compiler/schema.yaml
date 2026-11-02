@@ -1,0 +1,153 @@
+# Compiler：输出契约
+
+> 这份文件是**唯一真相**。`templates/output.md` 由它派生，不要反过来改模板。
+> `evals/run.py` 用同一份字段表做校验，改字段必须同时改 run.py 的 `SCHEMA`（CI 会抓）。
+
+```yaml
+version: 0.2.0
+contract: AnalysisPayload
+encoding: YAML
+
+# ══════════════ 永远必填 ══════════════
+always:
+
+  run:
+    flow: [vertical, spiral, diagnose, retro, structure]
+    modifiers: [defensive, premortem, collide, failure_list]   # 可为空数组
+    mode: [deep, lean]
+    axes: {settled: bool, choose: bool, multi: bool, oneway: bool}
+    reversibility: [one-way, two-way, partial]
+
+  problem:
+    one_line: str          # 一句话，不许含"如何""怎么"这种万能词
+    owner: str             # 谁来做决定（人/角色）
+    by_when: str           # 什么时候必须定下来
+
+  answer:                  # 给人读的那一段
+    verdict: str           # 第一句就是结论，≤40 字
+    why: [str]             # 1-3 条，每条自成一句
+    first_step: str        # 与 plan.first_step 一致
+    what_would_change_my_mind: str   # ≥1 个可观测条件
+
+  root_chain:              # ≥2 条，且 ≥1 条 status=rejected
+    - question: str        # 往下追的那一问
+      candidate: str       # 候选根
+      status: [kept, rejected]
+      why: str             # 接受/否掉的具体理由（≥15 字）
+
+  open_frontier: str       # 还没压到的那块是什么（≥15 字）
+
+  weights:                 # ≥2 条；max(weight) >= 2 * min(weight)
+    - dimension: str
+      weight: int          # 1-5
+      evidence: str        # 这个分数的依据（具体事实，不是形容词）
+      only_one: bool       # 只能留一个的话留它吗（恰好 1 条为 true）
+
+  strongest_counterargument: str    # 最强反方，≥25 字；不许写"也可能有风险"
+
+  decision:
+    choice: str
+    rationale: str
+    confidence: [low, mid, high]
+    kill_criteria: [str]   # ≥1 条，可观测
+
+  plan:
+    first_step: {verb: str, object: str, when: str, done_marker: str}
+    steps: [str]
+    owner: str
+    deadline: str
+
+  signals:
+    system_turning: [str]  # ≥1 条领先信号：早出现、能说明"系统在转"
+    outcome: [str]         # ≥1 条滞后信号：结果指标
+
+  unknowns:                # ≥1 条
+    - unchecked: str
+      how: str
+      cost: str
+
+  reentry:
+    check_on: str          # 具体日期或具体事件，不许"以后定期"
+    question: str
+    carries: [str]
+
+  self_check:              # 七道门禁的**证据**，不是布尔
+    root_chain: str
+    multi_view: str
+    weighted: str
+    worst_case: str
+    first_step: str
+    signals: str
+    falsifier: str
+
+# ══════════════ 条件必填 ══════════════
+when:
+
+  - cond: "multi or oneway, and not settled"
+    add:
+      opposing_forces:     # 阴阳拆解
+        yang: [{claim: str, magnitude: str}]   # 好处/机会，必须带量级
+        yin:  [{claim: str, magnitude: str}]   # 代价/风险，必须带量级
+        pivot: str         # 交汇处/质变点：什么条件下阴转阳、阳转阴
+
+  - cond: "oneway and not settled"
+    add:
+      risks:
+        worst_case: str
+        loss: {amount: str, unit: str, share_of_resources: str, ceiling: str}
+        reversible: [one-way, partial]
+        mitigation: str
+      premortem:
+        failed_at: str     # 假设 6 个月后失败，失败发生在哪
+        causes: [str]      # ≥2 条，从最致命写起
+        earliest_signal: str
+
+  - cond: "flow == diagnose"
+    add:
+      anchors:             # 杠杆三件套（可证伪要求 1+2）
+        fulcrum: {metric: str, floor: str, invariant: str}
+        gap: str
+        deadline: str
+        signal: str
+        review_at: str
+
+  - cond: "flow == retro"
+    add:
+      failure_chain:
+        stage: int         # 在废掉链的第几步（1-7）
+        earliest_failure: str
+        root: str
+        warning_triggers: [str]
+
+  - cond: "flow == structure"
+    add:
+      arc:
+        start: {lacks: str, fears: str, wants: str}
+        end: {gains: str, lets_go: str, becomes: str}
+        turn: str
+        obstacles: [str]
+        actions: [str]
+        causal_ok: bool    # 因果链是否成立；false 必须写明哪一处是硬连的
+
+# ══════════════ 禁止 ══════════════
+forbidden:
+  - self_check 里出现: ["是", "否", "通过", "true", "false", "已通过", "全过", "N/A", "无"]
+  - yin / yang 写形容词而无量级（如"有一定风险"）
+  - kill_criteria 写不可观测词（"感觉不对"、"情况变化"）
+  - reentry.check_on 写"以后"、"定期"、"持续关注"
+  - root_chain 全部 status=kept（没有否掉任何候选 = 没追）
+  - unknowns 为空
+```
+
+## 为什么改这几个字段（v0.1 → v0.2）
+
+| v0.1 | 病 | v0.2 |
+|---|---|---|
+| `guardrails_passed: {7×bool}` | 自己给自己打分，一律填 true，信息量为零 | `self_check` 每项交**证据字符串**，且禁用 9 个词 |
+| `root: string` | 一个字符串装不下追的过程，"根就是执行力不够"最容易通关 | `root_chain` ≥2 条且必须有被否掉的候选 |
+| `can_afford: bool` | 布尔把数字藏起来了 | `loss.share_of_resources` + `ceiling`，比例超天花板直接判否 |
+| 无 | 没有"我可能错了" | `strongest_counterargument` + `kill_criteria` + `what_would_change_my_mind` |
+| 无 | 不声明没查什么 | `unknowns` ≥1 |
+| `verification: {metric, threshold}` | 混了"结果"和"系统在转" | `signals.system_turning` / `signals.outcome` 分开 |
+| `yinyang` 全局必填 | `structure`/`vertical` 用不上，逼模型凑字 | 条件必填（multi 或 oneway） |
+| `loop_back.trigger` | 写在输出里就没人再看 | `reentry.check_on` 必须具体日期/事件 |

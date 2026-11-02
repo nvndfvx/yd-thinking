@@ -1,0 +1,17 @@
+{"id":"buy_drone","input":"我要不要买大疆","axes":{"settled":false,"choose":true,"multi":false,"oneway":false},"expect_flow":"vertical","expect_mods":[],"expect_mode":"lean"}
+{"id":"resign_fulltime","input":"要不要辞职全职做账号","axes":{"settled":false,"choose":true,"multi":true,"oneway":true},"expect_flow":"spiral","expect_mods":["collide","defensive","premortem"],"expect_mode":"deep"}
+{"id":"video_stuck","input":"我的视频号做不起来","axes":{"settled":false,"choose":false,"multi":false,"oneway":false},"expect_flow":"diagnose","expect_mods":[],"expect_mode":"lean"}
+{"id":"startup_failed","input":"上次创业为什么失败","axes":{"settled":true,"choose":false,"multi":true,"oneway":true},"expect_flow":"retro","expect_mods":["collide","failure_list"],"expect_mode":"deep"}
+{"id":"script_act2","input":"这个剧本第二幕塌了","axes":{"settled":false,"choose":false,"multi":false,"oneway":false,"structure":true},"expect_flow":"structure","expect_mods":[],"expect_mode":"lean"}
+{"id":"choose_three_dirs","input":"三个方向选哪个","axes":{"settled":false,"choose":true,"multi":true,"oneway":false},"expect_flow":"spiral","expect_mods":["collide"],"expect_mode":"deep"}
+{"id":"learn_tech","input":"这个技术我要不要学","axes":{"settled":false,"choose":true,"multi":false,"oneway":false},"expect_flow":"vertical","expect_mods":[],"expect_mode":"lean"}
+{"id":"cut_friend","input":"我该不该断这个朋友","axes":{"settled":false,"choose":true,"multi":true,"oneway":true},"expect_flow":"spiral","expect_mods":["collide","defensive","premortem"],"expect_mode":"deep"}
+{"id":"drop_out","input":"我要不要退学","axes":{"settled":false,"choose":true,"multi":true,"oneway":true},"expect_flow":"spiral","expect_mods":["collide","defensive","premortem"],"expect_mode":"deep"}
+{"id":"three_min_heat","input":"我为什么总是三分钟热度","axes":{"settled":true,"choose":false,"multi":false,"oneway":false},"expect_flow":"retro","expect_mods":["failure_list"],"expect_mode":"deep"}
+{"id":"side_business","input":"这个副业值不值得投入","axes":{"settled":false,"choose":true,"multi":false,"oneway":false},"expect_flow":"vertical","expect_mods":[],"expect_mode":"lean"}
+{"id":"big_factory_vs_startup","input":"我该去大厂还是创业公司","axes":{"settled":false,"choose":true,"multi":true,"oneway":false},"expect_flow":"spiral","expect_mods":["collide"],"expect_mode":"deep"}
+{"id":"sign_exclusive","input":"要不要签三年独家","axes":{"settled":false,"choose":true,"multi":false,"oneway":true},"expect_flow":"vertical","expect_mods":["defensive","premortem"],"expect_mode":"deep"}
+{"id":"accept_offer_unknown","input":"有家公司挖我，要不要去（没说条件）","axes":{},"expect_flow":"insufficient","expect_mods":[],"expect_mode":null}
+{"id":"career_change_full","input":"帮我完整分析要不要转行","axes":{"settled":false,"choose":true,"multi":true,"oneway":true},"expect_flow":"spiral","expect_mods":["collide","defensive","premortem"],"expect_mode":"deep"}
+{"id":"breakup","input":"我该不该分手","axes":{"settled":false,"choose":true,"multi":true,"oneway":true},"expect_flow":"spiral","expect_mods":["collide","defensive","premortem"],"expect_mode":"deep"}
+{"id":"missing_settled","input":"我当时该不该那样做","axes":{"choose":true},"expect_flow":"insufficient","expect_mods":[],"expect_mode":null}
